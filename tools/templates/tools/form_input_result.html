@@ -1,0 +1,53 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+    {% block form_title %}{% endblock %}
+{% endblock %}
+
+
+{% block body %}
+
+    <h1 class= "container text-left mt-3 mb-3">
+        {% block h1 %}{% endblock %}
+    </h1>
+
+    <div class="container mb-3">{% block under_h1 %}{% endblock %}</div>
+
+    <div class="container text-left">
+        <div class="row">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-control">
+
+                    {% block form_options %}{% endblock %}
+                    {{ form.input_data }}
+
+                    <input class="btn btn-outline-primary m-sm-3" type="submit" value="Сделать штуку">
+                    {{ form.result }}
+                    <button class="btn btn-outline-primary m-sm-3" onclick="myFunction()">
+                        Скопировать в буфер
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<script>
+    function myFunction() {
+  /* Get the text field */
+  var copyText = document.getElementById("id_result");
+
+  /* Select the text field */
+  copyText.select();
+  copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+
+  /* Copy the text inside the text field */
+  document.execCommand("copy");
+
+  /* Alert the copied text */
+  alert("Скопировано в буфер");
+}
+</script>
+{% endblock %}
+
+
