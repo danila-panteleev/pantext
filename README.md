@@ -1,0 +1,2 @@
+# pantext
+Django Multi-App
