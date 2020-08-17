@@ -21,10 +21,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'main/static')
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql.psycopg2',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'pantext',
         'USER': 'pantextdb',
-        'PASSWORD': '130013',
+        'PASSWORD': '13pont13',
         'HOST': 'localhost',
         'PORT': '5432',
     }
