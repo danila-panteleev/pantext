@@ -1,3 +1,3 @@
 # pantext
-Django Multi-App
-Using [bootstrap 5(https://mdbootstrap.com/docs/standard/getting-started/installation/] (not included)
+Django Multi-App.
+Using [bootstrap 5](https://mdbootstrap.com/docs/standard/getting-started/installation/) (not included)
