@@ -1,16 +1,19 @@
 {% extends 'main/base.html' %}
-{% include 'main/form.html' %}
 
 {% block title %}
     Инструменты для работы с текстом
 {% endblock %}
 
-{% block content %}
-    <h1>
-        Инструменты для работы с текстом
-    </h1>
-
-    <p>
-        Здесь могла быть ваша реклама
+{% block body %}
+    <p class="container lead">
+        Сервис создан при изучении фреймворка Django и находится в активной разработке.
     </p>
+    <p class="container lead">
+        Идеи для реализации нужных в работе инструментов пишите на <a href="mailto:">danila@pantext.ru</a>
+    </p>
+    <ul class="container">
+        <li>
+            <a href="/contacts">Контакты автора</a>
+        </li>
+    </ul>
 {% endblock %}
