@@ -1,0 +1,22 @@
+{% extends 'tools/form_input_result.html' %}
+
+{% block form_title %}
+    Сортировка списка
+{% endblock %}
+
+
+{% block h1 %}
+    Сортировка списка
+{% endblock %}
+
+{% block under_h1 %}
+    Перед сортировкой приведите данные к списку: <a href="/row_to_column">Строка в столбец</a>
+{% endblock %}
+
+{% block form_options %}
+    {{ form.case_sensitive }}
+    <label for="case_sensitive" class="mb-2 mr-5">Учитывать регистр</label>
+    {{ form.reverse }}
+    <label for="reverse" class="mb-2">Обратный порядок</label>
+{% endblock %}
+

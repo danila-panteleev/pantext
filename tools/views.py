@@ -2,7 +2,8 @@ from django.shortcuts import render
 from .forms import (RowToColumnForm,
                     ColumnToRowForm,
                     DeleteDuplicatesForm,
-                    NumberInWordsForm)
+                    NumberInWordsForm,
+                    ListSortingForm)
 
 
 def row_to_column(request):
@@ -73,3 +74,22 @@ def numbers_in_words(request):
         'form': form,
     }
     return render(request, 'tools/numbers_in_words.html', context)
+
+
+def list_sorting(request):
+    form = ListSortingForm()
+    if request.method == 'POST':
+        form = ListSortingForm(request.POST)
+
+    if form.is_valid():
+        case_sensitive = request.POST.getlist('case_sensitive')
+        reverse = request.POST.getlist('reverse')
+        form = form.sorting(case_sensitive=bool(case_sensitive),
+                            reverse=bool(reverse))
+        form = ListSortingForm(form.cleaned_data)
+        form.save()
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'tools/list_sorting.html', context)

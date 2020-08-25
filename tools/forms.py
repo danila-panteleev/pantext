@@ -3,9 +3,10 @@ from .models import (InputResult,
                      RowToColumn,
                      ColumnToRow,
                      DeleteDuplicates,
-                     NumbersInWords)
-from num2t4ru import decimal2text
-from decimal import Decimal
+                     NumbersInWords,
+                     ListSorting)
+from num2t4ru import decimal2text, num2text
+import decimal
 
 
 class InputForm(forms.ModelForm):
@@ -127,10 +128,89 @@ class NumberInWordsForm(InputForm):
     class Meta(InputForm.Meta):
         model = NumbersInWords
 
-    def numbers_in_words(self):
+    def numbers_in_words(self, with_cents=False, currency=''):
         if self.is_valid():
-            result = ''.join(self.cleaned_data['input_data'].split())
-            result = decimal2text(Decimal(result))
-            self.cleaned_data['result'] = result
+            result = self.cleaned_data['input_data']
 
+            if with_cents:
+                try:
+                    result = decimal2text(decimal.Decimal(result))
+                except decimal.InvalidOperation:
+                    result = result.replace(',', '.')
+                    result = ''.join(
+                        list(filter(lambda x: x in '1234567890.', result))
+                    )
+                    if result.count('.') > 1:
+                        result = result.split('.')
+                        result_head = ''.join(result[:-1])
+                        result = result_head + '.' + result[-1]
+                        result = decimal2text(decimal.Decimal(result))
+                except IndexError:
+                    result = f'Я пока не умею обрабатывать числа больше 999,999,999,999.99 ' \
+                             f'({num2text(999999999999.99)}'
+            else:
+                try:
+                    result = num2text(int(result))
+                except ValueError:
+                    result = (''.join(
+                        list(
+                            filter(
+                                lambda x: x.isnumeric(),
+                                result
+                            )
+                        )
+                    ))
+                    result = num2text(int(result))
+                except IndexError:
+                    result = f'Я пока не умею обрабатывать числа больше 999 999 999 999 ' \
+                             f'({num2text(999999999999)}'
+
+            result = result.capitalize()
+            if currency:
+                pass
+            self.cleaned_data['result'] = result
+        return self
+
+
+class ListSortingForm(InputForm):
+    class Meta(InputForm.Meta):
+        model = ListSorting
+
+    def __init__(self, *args, **kwargs):
+        super(ListSortingForm, self).__init__(*args, **kwargs)
+        self.fields['case_sensitive'].required = False
+        self.fields['reverse'].required = False
+
+    case_sensitive = forms.BooleanField(widget=forms.CheckboxInput(attrs={
+        'class': 'form-check-input',
+        'label': 'case_sensitive',
+        'name': 'case_sensitive',
+        'checked': False
+    }))
+
+    reverse = forms.BooleanField(widget=forms.CheckboxInput(attrs={
+        'class': 'form-check-input',
+        'label': 'reverse',
+        'name': 'reverse',
+        'checked': False
+    }))
+
+    def sorting(self, reverse=False, case_sensitive=False):
+        if self.is_valid():
+            if case_sensitive:
+                self.cleaned_data['result'] = '\n'.join(
+                    sorted(
+                        self.cleaned_data['input_data'].split(),
+                        reverse=reverse
+                    )
+                )
+            else:
+                print(self.cleaned_data['input_data'].split())
+                self.cleaned_data['result'] = '\n'.join(
+                    sorted(
+                        self.cleaned_data['input_data'].split(),
+                        reverse=reverse,
+                        key=str.lower
+                    )
+                )
         return self

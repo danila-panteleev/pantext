@@ -24,3 +24,8 @@ class DeleteDuplicates(InputResult):
 
 class NumbersInWords(InputResult):
     pass
+
+
+class ListSorting(InputResult):
+    case_sensitive = models.BooleanField(default=False)
+    save_position = models.BooleanField(default=False)
