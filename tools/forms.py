@@ -4,12 +4,16 @@ from .models import (InputResult,
                      ColumnToRow,
                      DeleteDuplicates,
                      NumbersInWords,
-                     ListSorting)
+                     ListSorting,
+                     ChangeCase)
 from num2t4ru import decimal2text, num2text
 import decimal
 
 
 class InputForm(forms.ModelForm):
+    """
+    Суперкласс для форм, состоящих из двух полей: ввод и вывод
+    """
     def __init__(self, *args, **kwargs):
         super(InputForm, self).__init__(*args, **kwargs)
         self.fields['result'].required = False
@@ -31,6 +35,9 @@ class InputForm(forms.ModelForm):
 
 
 class RowToColumnForm(InputForm):
+    """
+    Форма "Строка в столбец"
+    """
     class Meta(InputForm.Meta):
         model = RowToColumn
 
@@ -57,6 +64,9 @@ class RowToColumnForm(InputForm):
 
 
 class ColumnToRowForm(RowToColumnForm):
+    """
+    Форма "Столбец в строку"
+    """
     def __init__(self, *args, **kwargs):
         super(ColumnToRowForm, self).__init__(*args, **kwargs)
         self.fields['sep'].strip = False
@@ -77,6 +87,9 @@ class ColumnToRowForm(RowToColumnForm):
 
 
 class DeleteDuplicatesForm(InputForm):
+    """
+    Форма "Удаление дубликатов"
+    """
     def __init__(self, *args, **kwargs):
         super(DeleteDuplicatesForm, self).__init__(*args, **kwargs)
         self.fields['case_sensitive'].required = False
@@ -100,6 +113,11 @@ class DeleteDuplicatesForm(InputForm):
         model = DeleteDuplicates
 
     def delete_duplicates(self, case_sensitive=False, delete_nulls=True):
+        """
+        :param case_sensitive: регистрозависимость
+        :param delete_nulls: удаление пустых строк (если False, то все первые значения остаются на своих позициях,
+        вместо дублей пустая строка)
+        """
         if self.is_valid():
             result = self.cleaned_data['input_data'].split('\n')
 
@@ -125,6 +143,9 @@ class DeleteDuplicatesForm(InputForm):
 
 
 class NumberInWordsForm(InputForm):
+    """
+    Форма "Число прописью"
+    """
     class Meta(InputForm.Meta):
         model = NumbersInWords
 
@@ -173,6 +194,9 @@ class NumberInWordsForm(InputForm):
 
 
 class ListSortingForm(InputForm):
+    """
+    Форма "Сортировка списков"
+    """
     class Meta(InputForm.Meta):
         model = ListSorting
 
@@ -196,6 +220,10 @@ class ListSortingForm(InputForm):
     }))
 
     def sorting(self, reverse=False, case_sensitive=False):
+        """
+        :param reverse: обратный порядок
+        :param case_sensitive: регистрозависимость
+        """
         if self.is_valid():
             if case_sensitive:
                 self.cleaned_data['result'] = '\n'.join(
@@ -213,4 +241,61 @@ class ListSortingForm(InputForm):
                         key=str.lower
                     )
                 )
+        return self
+
+
+class ChangeCaseForm(InputForm):
+    class Meta(InputForm.Meta):
+        model = ChangeCase
+
+    def change_case(self, mode='change_case_each_word', option=False):
+        option = bool(option)
+
+        def change_case_each_word(data, reverse=False):
+            data = data[:]
+
+            if reverse:
+                data[0] = data[0].lower()
+            else:
+                data[0] = data[0].upper()
+
+            for i in range(1, len(data)):
+                if data[i - 1] in [' ', '\n']:
+                    if reverse:
+                        data[i] = data[i].lower()
+                    else:
+                        data[i] = data[i].upper()
+
+            return data
+
+        def change_case_sentence_like(data, reverse=False):
+            data = data[:]
+
+            return data
+
+        def change_case_all(data, upper=True):
+            data = data[:]
+
+            return data
+
+        def change_case_fence(data, reverse=False):
+            data = data[:]
+
+            return data
+
+        if self.is_valid():
+            input_data = list(self.cleaned_data['input_data'])
+
+            if mode == 'change_case_each_word':
+                self.cleaned_data['result'] = ''.join(change_case_each_word(input_data, reverse=option))
+
+            elif mode == 'change_case_sentence_like':
+                self.cleaned_data['result'] = ''.join(change_case_sentence_like(input_data, reverse=option))
+
+            elif mode == 'change_case_all':
+                self.cleaned_data['result'] = ''.join(change_case_all(input_data, upper=option))
+
+            elif mode == 'change_case_fence':
+                self.cleaned_data['result'] = ''.join(change_case_fence(input_data, reverse=option))
+
         return self

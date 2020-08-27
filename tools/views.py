@@ -3,7 +3,8 @@ from .forms import (RowToColumnForm,
                     ColumnToRowForm,
                     DeleteDuplicatesForm,
                     NumberInWordsForm,
-                    ListSortingForm)
+                    ListSortingForm,
+                    ChangeCaseForm)
 
 
 def row_to_column(request):
@@ -93,3 +94,19 @@ def list_sorting(request):
         'form': form,
     }
     return render(request, 'tools/list_sorting.html', context)
+
+
+def change_case(request):
+    form = ChangeCaseForm()
+    if request.method == 'POST':
+        form = ChangeCaseForm(request.POST)
+
+    if form.is_valid():
+        form = form.change_case()
+        form = ChangeCaseForm(form.cleaned_data)
+        form.save()
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'tools/change_case.html', context)
