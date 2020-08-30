@@ -5,15 +5,18 @@ from .models import (InputResult,
                      DeleteDuplicates,
                      NumbersInWords,
                      ListSorting,
-                     ChangeCase)
+                     ChangeCase,
+                     Autofill)
 from num2t4ru import decimal2text, num2text
 import decimal
+import random
 
 
 class InputForm(forms.ModelForm):
     """
     Суперкласс для форм, состоящих из двух полей: ввод и вывод
     """
+
     def __init__(self, *args, **kwargs):
         super(InputForm, self).__init__(*args, **kwargs)
         self.fields['result'].required = False
@@ -38,6 +41,7 @@ class RowToColumnForm(InputForm):
     """
     Форма "Строка в столбец"
     """
+
     class Meta(InputForm.Meta):
         model = RowToColumn
 
@@ -67,6 +71,7 @@ class ColumnToRowForm(RowToColumnForm):
     """
     Форма "Столбец в строку"
     """
+
     def __init__(self, *args, **kwargs):
         super(ColumnToRowForm, self).__init__(*args, **kwargs)
         self.fields['sep'].strip = False
@@ -90,6 +95,7 @@ class DeleteDuplicatesForm(InputForm):
     """
     Форма "Удаление дубликатов"
     """
+
     def __init__(self, *args, **kwargs):
         super(DeleteDuplicatesForm, self).__init__(*args, **kwargs)
         self.fields['case_sensitive'].required = False
@@ -146,6 +152,7 @@ class NumberInWordsForm(InputForm):
     """
     Форма "Число прописью"
     """
+
     class Meta(InputForm.Meta):
         model = NumbersInWords
 
@@ -245,14 +252,82 @@ class ListSortingForm(InputForm):
 
 
 class ChangeCaseForm(InputForm):
+    """
+    Форма "Изменение регистра"
+    """
     class Meta(InputForm.Meta):
         model = ChangeCase
 
-    def change_case(self, mode='change_case_each_word', option=False):
-        option = bool(option)
+    EACH_WORD = 'each_word'
+    SENTENCE = 'sentence'
+    ALL_LETTERS = 'all_letters'
+    FENCE = 'fence'
+    RANDOM_CASE = 'random_case'
 
-        def change_case_each_word(data, reverse=False):
-            data = data[:]
+    MODE_CHOICES = [
+        (EACH_WORD, 'Каждое Слово / кАЖДОЕ сЛОВО'),
+        (SENTENCE, 'Как. В предложении'),
+        (ALL_LETTERS, 'ВСЕ БУКВЫ / все буквы'),
+        (FENCE, 'ЗаБоРчИкОм'),
+        (RANDOM_CASE, 'сЛуЧАЙныЙ РЕГиСТр')
+    ]
+
+    mode = forms.CharField(label='Режим: ', max_length=50,
+                           widget=forms.Select(
+                               choices=MODE_CHOICES,
+                               attrs={
+                                   'class': 'form-select',
+                                   'label': 'mode',
+                                   'name': 'mode',
+                               }
+                           ))
+
+    option_reverse = forms.BooleanField(widget=forms.CheckboxInput(attrs={
+        'class': 'form-check-input mt-2 mb-2',
+        'label': 'option_reverse',
+        'name': 'option_reverse',
+        'checked': False
+    }))
+
+    option_force = forms.BooleanField(widget=forms.CheckboxInput(attrs={
+        'class': 'form-check-input mt-2 mb-2',
+        'label': 'option_force',
+        'name': 'option_force',
+        'checked': False
+    }))
+
+    def __init__(self, *args, **kwargs):
+        super(ChangeCaseForm, self).__init__(*args, **kwargs)
+        self.fields['option_reverse'].required = False
+        self.fields['option_force'].required = False
+
+    def change_case(self, mode='', option_reverse=True, option_force=True):
+        """
+        Основная функция изменения регистра
+
+        :param mode: тип изменения регистра(вызываемая подфункция):
+                                             Каждое слово           each_word
+                                             Как в предложениях     sentence
+                                             Все буквы              all_letters
+                                             Заборчиком (ПрИмЕр)    fence
+                                             Случайный регистр      random_case
+        :param option_reverse: если True, то подфункция инвертируется
+        :param option_force: если True, то подфункция принудительно меняет регистр
+        :return: self
+        """
+        option_reverse = bool(option_reverse)
+        option_force = bool(option_force)
+
+        def each_word(data, reverse=option_reverse, force=option_force):
+            """
+            Каждое слово
+
+            :param data: строка
+            :param reverse: если True, то функция инвертируется
+            :param force: если True, то функция принудительно меняет регистр
+            :return: итоговая строка
+            """
+            data = list(data)
 
             if reverse:
                 data[0] = data[0].lower()
@@ -260,42 +335,160 @@ class ChangeCaseForm(InputForm):
                 data[0] = data[0].upper()
 
             for i in range(1, len(data)):
-                if data[i - 1] in [' ', '\n']:
+                if data[i - 1] in [' ', '\n', '\t']:
                     if reverse:
                         data[i] = data[i].lower()
                     else:
                         data[i] = data[i].upper()
 
+                elif force:
+                    if reverse:
+                        data[i] = data[i].upper()
+                    else:
+                        data[i] = data[i].lower()
+
+            return ''.join(data)
+
+        def sentence(data, reverse=option_reverse, force=option_force):
+            """
+            Как в предложениях.
+            После знаков препинания и с новой строки (preps) первая буква слова большая
+
+            :param data: строка
+            :param force: если True, то функция принудительно изменяет регистр
+            :param reverse: если True, то функция инвертируется
+            :return: итоговая строка
+            """
+            data = list(data)
+            preps = ['.', '!', '\n', '?']
+            if reverse:
+                data[0] = data[0].lower()
+                data[1] = data[1].upper()
+            else:
+                data[0] = data[0].upper()
+
+            for i in range(2, len(data)):
+                if reverse:
+                    if (data[i - 2] not in preps
+                    and data[i - 1] not in preps):
+                        data[i] = data[i].upper()
+
+                    elif force:
+                        data[i] = data[i].lower()
+
+                else:
+                    if (data[i - 2] in preps
+                     or data[i - 1] in preps):
+                        data[i] = data[i].upper()
+
+                    elif force:
+                        data[i] = data[i].lower()
+
+            return ''.join(data)
+
+        def all_letters(data, reverse=option_reverse):
+            """
+            Все буквы
+
+            :param data: строка
+            :param reverse: если True, то функция инвертируется
+            :return: итоговая строка
+            """
+
+            if reverse:
+                data = data.lower()
+            else:
+                data = data.upper()
+
             return data
 
-        def change_case_sentence_like(data, reverse=False):
-            data = data[:]
+        def fence(data, reverse=option_reverse):
+            """
+            Заборчик
 
-            return data
+            :param data: строка
+            :param reverse: инверсия
+            :return: итоговая строка
+            """
+            data = list(data)
+            preps = ['.', '!', '?', ' ', '\n', '\t', '\r']
+            flip = True
 
-        def change_case_all(data, upper=True):
-            data = data[:]
+            for i in range(len(data)):
+                if reverse:
+                    if data[i] not in preps:
+                        if flip:
+                            data[i] = data[i].lower()
+                            flip = False
+                        else:
+                            data[i] = data[i].upper()
+                            flip = True
+                else:
+                    if data[i] not in preps:
+                        if flip:
+                            data[i] = data[i].upper()
+                            flip = False
+                        else:
+                            data[i] = data[i].lower()
+                            flip = True
 
-            return data
+            return ''.join(data)
 
-        def change_case_fence(data, reverse=False):
-            data = data[:]
+        def random_case(data):
+            data = list(data)
 
-            return data
+            for i in range(len(data)):
+                if random.choice([True, False]):
+                    data[i] = data[i].upper()
+                else:
+                    data[i] = data[i].lower()
+
+            return ''.join(data)
 
         if self.is_valid():
-            input_data = list(self.cleaned_data['input_data'])
+            input_data = self.cleaned_data['input_data']    
 
-            if mode == 'change_case_each_word':
-                self.cleaned_data['result'] = ''.join(change_case_each_word(input_data, reverse=option))
+            if mode == 'each_word':
+                self.cleaned_data['result'] = each_word(input_data)
 
-            elif mode == 'change_case_sentence_like':
-                self.cleaned_data['result'] = ''.join(change_case_sentence_like(input_data, reverse=option))
+            elif mode == 'sentence':
+                self.cleaned_data['result'] = sentence(input_data)
 
-            elif mode == 'change_case_all':
-                self.cleaned_data['result'] = ''.join(change_case_all(input_data, upper=option))
+            elif mode == 'all_letters':
+                self.cleaned_data['result'] = all_letters(input_data)
 
-            elif mode == 'change_case_fence':
-                self.cleaned_data['result'] = ''.join(change_case_fence(input_data, reverse=option))
+            elif mode == 'fence':
+                self.cleaned_data['result'] = fence(input_data)
 
+            elif mode == 'random_case':
+                self.cleaned_data['result'] = random_case(input_data)
+
+        return self
+
+
+class AutofillForm(InputForm):
+    """
+    Форма "Автозаполнение пустых строк"
+    """
+    class Meta(InputForm.Meta):
+        model = Autofill
+
+    def __init__(self, *args, **kwargs):
+        super(AutofillForm, self).__init__(*args, **kwargs)
+        self.fields['input_data'].strip = False
+
+    def autofill(self):
+
+        if self.is_valid():
+            print(self.cleaned_data['input_data'])
+            input_data = self.cleaned_data['input_data'].split('\r')
+            temp = input_data[0].strip()
+            for i in range(1, len(input_data)):
+                if input_data[i] == '\n':
+                    input_data[i] = temp
+                else:
+                    input_data[i] = input_data[i].strip()
+                    temp = input_data[i]
+        print(input_data)
+        self.cleaned_data['result'] = '\n'.join(input_data)
         return self

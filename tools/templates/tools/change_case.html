@@ -11,6 +11,10 @@
 
 
 {% block form_options %}
-
+    {{ form.mode }}
+    {{ form.option_reverse }}
+    <label for="option_reverse" class="mb-2 mt-1 mr-5">Инвертировать</label>
+    {{ form.option_force }}
+    <label for="option_force" class="mb-2 mt-1">Принудительный режим</label>
 {% endblock %}
 

@@ -51,6 +51,28 @@ class ListSorting(InputResult):
 
 class ChangeCase(InputResult):
     """
-    Модель для формы "Изменение регистра
+    Модель для формы "Изменение регистра"
     """
-    pass
+    EACH_WORD = 'each_word'
+    SENTENCE = 'sentence'
+    ALL_LETTERS = 'all_letters'
+    FENCE = 'fence'
+    RANDOM_CASE = 'random_case'
+
+    MODE_CHOICES = [
+        (EACH_WORD, 'Каждое Слово / кАЖДОЕ сЛОВО'),
+        (SENTENCE, 'Как. В предложении'),
+        (ALL_LETTERS, 'ВСЕ БУКВЫ / все буквы'),
+        (FENCE, 'ЗаБоРчИкОм'),
+        (RANDOM_CASE, 'сЛуЧАЙныЙ РЕГиСТр')
+    ]
+
+    mode = models.CharField(max_length=50, choices=MODE_CHOICES, default=EACH_WORD)
+    option_reverse = models.BooleanField(default=False)
+    option_force = models.BooleanField(default=False)
+
+
+class Autofill(InputResult):
+    """
+    Модель для формы "Автозаполнение строк"
+    """

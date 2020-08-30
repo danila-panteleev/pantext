@@ -1,16 +1,19 @@
 {% extends 'tools/form_input_result.html' %}
 
 {% block form_title %}
-    Строка в столбец
+    Автозаполнение строк
 {% endblock %}
 
 
 {% block h1 %}
-    Строка в столбец
+    Автозаполнение строк
 {% endblock %}
 
+{% block under_h1 %}
+    Перед автозаполнением строк приведите данные к списку: <a href="/row_to_column">Строка в столбец</a>
+    <p>Так же вам может понадобится <a href="/tools/delete_duplicates">Удаление дубликатов</a></p>
+{% endblock %}
 
 {% block form_options %}
-    {{ form.sep }}
 {% endblock %}
 

@@ -4,7 +4,8 @@ from .forms import (RowToColumnForm,
                     DeleteDuplicatesForm,
                     NumberInWordsForm,
                     ListSortingForm,
-                    ChangeCaseForm)
+                    ChangeCaseForm,
+                    AutofillForm)
 
 
 def row_to_column(request):
@@ -102,7 +103,11 @@ def change_case(request):
         form = ChangeCaseForm(request.POST)
 
     if form.is_valid():
-        form = form.change_case()
+        mode = request.POST.getlist('mode')
+        option_reverse = request.POST.getlist('option_reverse')
+        option_force = request.POST.getlist('option_force')
+
+        form = form.change_case(mode[0], option_reverse, option_force)
         form = ChangeCaseForm(form.cleaned_data)
         form.save()
 
@@ -110,3 +115,19 @@ def change_case(request):
         'form': form,
     }
     return render(request, 'tools/change_case.html', context)
+
+
+def autofill(request):
+    form = AutofillForm()
+    if request.method == 'POST':
+        form = AutofillForm(request.POST)
+
+    if form.is_valid():
+        form = form.autofill()
+        form = AutofillForm(form.cleaned_data)
+        form.save()
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'tools/autofill.html', context)
