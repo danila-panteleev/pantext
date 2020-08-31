@@ -1,0 +1,23 @@
+{% extends 'tools/form_input_result.html' %}
+
+{% block form_title %}
+    Удаление дубликатов
+{% endblock %}
+
+
+{% block h1 %}
+    Удаление дубликатов
+{% endblock %}
+
+{% block under_h1 %}
+Перед удалением дубликатов приведите данные к списку: <a href="/row_to_column">Строка в столбец</a>
+
+{% endblock %}
+
+{% block form_options %}
+    {{ form.case_sensitive }}
+    <label for="case_sensitive" class="mb-2 mr-5">Учитывать регистр</label>
+    {{ form.delete_nulls }}
+    <label for="delete_nulls" class="mb-2">Удалить пустые строки</label>
+{% endblock %}
+
