@@ -6,10 +6,13 @@ from .models import (InputResult,
                      NumbersInWords,
                      ListSorting,
                      ChangeCase,
-                     Autofill)
+                     Autofill,
+                     CrossMinusCleaner,
+                     UtmDeleter)
 from num2t4ru import decimal2text, num2text
 import decimal
 import random
+import re
 
 
 class InputForm(forms.ModelForm):
@@ -142,7 +145,7 @@ class DeleteDuplicatesForm(InputForm):
             if delete_nulls:
                 result = list(filter(bool, result))
 
-            print(result)
+            # print(result)
             self.cleaned_data['result'] = '\n'.join(result)
 
         return self
@@ -204,6 +207,7 @@ class ListSortingForm(InputForm):
     """
     Форма "Сортировка списков"
     """
+
     class Meta(InputForm.Meta):
         model = ListSorting
 
@@ -240,7 +244,7 @@ class ListSortingForm(InputForm):
                     )
                 )
             else:
-                print(self.cleaned_data['input_data'].split())
+                # print(self.cleaned_data['input_data'].split())
                 self.cleaned_data['result'] = '\n'.join(
                     sorted(
                         self.cleaned_data['input_data'].split(),
@@ -255,6 +259,7 @@ class ChangeCaseForm(InputForm):
     """
     Форма "Изменение регистра"
     """
+
     class Meta(InputForm.Meta):
         model = ChangeCase
 
@@ -370,7 +375,7 @@ class ChangeCaseForm(InputForm):
             for i in range(2, len(data)):
                 if reverse:
                     if (data[i - 2] not in preps
-                    and data[i - 1] not in preps):
+                            and data[i - 1] not in preps):
                         data[i] = data[i].upper()
 
                     elif force:
@@ -378,7 +383,7 @@ class ChangeCaseForm(InputForm):
 
                 else:
                     if (data[i - 2] in preps
-                     or data[i - 1] in preps):
+                            or data[i - 1] in preps):
                         data[i] = data[i].upper()
 
                     elif force:
@@ -446,7 +451,7 @@ class ChangeCaseForm(InputForm):
             return ''.join(data)
 
         if self.is_valid():
-            input_data = self.cleaned_data['input_data']    
+            input_data = self.cleaned_data['input_data']
 
             if mode == 'each_word':
                 self.cleaned_data['result'] = each_word(input_data)
@@ -470,6 +475,7 @@ class AutofillForm(InputForm):
     """
     Форма "Автозаполнение пустых строк"
     """
+
     class Meta(InputForm.Meta):
         model = Autofill
 
@@ -480,7 +486,6 @@ class AutofillForm(InputForm):
     def autofill(self):
 
         if self.is_valid():
-            print(self.cleaned_data['input_data'])
             input_data = self.cleaned_data['input_data'].split('\r')
             temp = input_data[0].strip()
             for i in range(1, len(input_data)):
@@ -489,6 +494,42 @@ class AutofillForm(InputForm):
                 else:
                     input_data[i] = input_data[i].strip()
                     temp = input_data[i]
-        print(input_data)
         self.cleaned_data['result'] = '\n'.join(input_data)
+        return self
+
+
+class CrossMinusCleanerForm(InputForm):
+    class Meta(InputForm.Meta):
+        model = CrossMinusCleaner
+
+    def cross_minus_delete(self):
+        if self.is_valid():
+            input_data = self.cleaned_data['input_data'].split('\n')
+            for i in range(len(input_data)):
+                keyword = input_data[i].split(' ')
+                keyword = ' '.join(
+                    list(
+                        filter(
+                            lambda word: not word.startswith('-'),
+                            keyword
+                        )
+                    )
+                )
+                input_data[i] = keyword
+            input_data = '\n'.join(input_data)
+            self.cleaned_data['result'] = input_data
+
+        return self
+
+
+class UtmDeleterForm(InputForm):
+    class Meta(InputForm.Meta):
+        model = UtmDeleter
+
+    def utm_delete(self):
+        if self.is_valid():
+            input_data = self.cleaned_data['input_data'].split('\n')
+            for i in range(len(input_data)):
+                input_data[i] = re.sub(r'.utm.*', '', input_data[i])
+            self.cleaned_data['result'] = '\n'.join(input_data)
         return self

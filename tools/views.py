@@ -5,7 +5,9 @@ from .forms import (RowToColumnForm,
                     NumberInWordsForm,
                     ListSortingForm,
                     ChangeCaseForm,
-                    AutofillForm)
+                    AutofillForm,
+                    CrossMinusCleanerForm,
+                    UtmDeleterForm)
 
 
 def row_to_column(request):
@@ -131,3 +133,35 @@ def autofill(request):
         'form': form,
     }
     return render(request, 'tools/autofill.html', context)
+
+
+def cross_minus_cleaner(request):
+    form = CrossMinusCleanerForm()
+    if request.method == 'POST':
+        form = CrossMinusCleanerForm(request.POST)
+
+    if form.is_valid():
+        form = form.cross_minus_delete()
+        form = CrossMinusCleanerForm(form.cleaned_data)
+        form.save()
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'tools/cross_minus_cleaner.html', context)
+
+
+def utm_deleter(request):
+    form = UtmDeleterForm()
+    if request.method == 'POST':
+        form = UtmDeleterForm(request.POST)
+
+    if form.is_valid():
+        form = form.utm_delete()
+        form = UtmDeleterForm(form.cleaned_data)
+        form.save()
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'tools/delete_utm.html', context)

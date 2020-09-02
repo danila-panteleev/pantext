@@ -31,7 +31,7 @@ class DeleteDuplicates(InputResult):
     Модель для формы "Удаление дубликатов"
     """
     case_sensitive = models.BooleanField(default=False)
-    save_position = models.BooleanField(default=False)
+    delete_nulls = models.BooleanField(default=False)
 
 
 class NumbersInWords(InputResult):
@@ -46,7 +46,7 @@ class ListSorting(InputResult):
     Модель для формы "Сортировка списка"
     """
     case_sensitive = models.BooleanField(default=False)
-    save_position = models.BooleanField(default=False)
+    reverse = models.BooleanField(default=False)
 
 
 class ChangeCase(InputResult):
@@ -75,4 +75,16 @@ class ChangeCase(InputResult):
 class Autofill(InputResult):
     """
     Модель для формы "Автозаполнение строк"
+    """
+
+
+class CrossMinusCleaner(InputResult):
+    """
+    Модель для формы "Чистка от кросс-минусации"
+    """
+
+
+class UtmDeleter(InputResult):
+    """
+    Модель для формы "Чистка от UTM-меток"
     """

@@ -10,5 +10,7 @@ urlpatterns = [
     path('tools/list_sorting', views.list_sorting, name='list_sorting'),
     path('tools/change_case', views.change_case, name='change_case'),
     path('tools/autofill', views.autofill, name='autofill'),
+    path('tools/cross_minus_cleaner', views.cross_minus_cleaner, name='cross_minus_cleaner'),
+    path('tools/delete_utm', views.utm_deleter, name='delete_utm'),
 
 ]

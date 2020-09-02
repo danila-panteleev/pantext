@@ -1,6 +1,5 @@
 # static
-main/static/css
-main/static/js
+static/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -131,3 +130,5 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
