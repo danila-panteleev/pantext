@@ -12,12 +12,12 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 SECRET_KEY = 'v_n3v_#@RFEr23rgfgfdg5645rtujkuyjlp[luikyhgjfj#iaffgfgwr23rvds8z!0q23flt3w_&'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '142.93.131.80']
+ALLOWED_HOSTS = ['127.0.0.1', '142.93.131.80', 'pantext.ru', 'www.pantext.ru', 'localhost']
 
-STATIC_DIR = os.path.join(BASE_DIR, 'main/static')
-STATIC_ROOT = os.path.join(BASE_DIR, 'main/static')
+STATIC_DIR = os.path.join(BASE_DIR, '/static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 DATABASES = {
     'default': {
