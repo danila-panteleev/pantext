@@ -376,15 +376,19 @@ class ChangeCaseForm(InputForm):
                 if reverse:
                     if (data[i - 2] not in preps
                             and data[i - 1] not in preps):
-                        data[i] = data[i].upper()
+
+                        if not data[i - 1].islower():
+                            data[i] = data[i].upper()
 
                     elif force:
-                        data[i] = data[i].lower()
+                        data[i] = data[i].upper()
 
                 else:
                     if (data[i - 2] in preps
                             or data[i - 1] in preps):
-                        data[i] = data[i].upper()
+
+                        if not data[i - 1].isupper():
+                            data[i] = data[i].upper()
 
                     elif force:
                         data[i] = data[i].lower()
