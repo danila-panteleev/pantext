@@ -13,5 +13,11 @@
 {% block form_options %}
     <p class="mb-0">Для табуляции используйте \t</p>
     {{ form.sep }}
+    <div class="mb-2">
+        {{ form.delete_extra_space }}
+        <label for="delete_extra_space" class="mb-0 mr-5">Удалить лишние пробелы и табы</label>
+        {{ form.delete_nulls }}
+        <label for="delete_nulls" class="mb-0">Удалить пустые строки</label>
+    </div>
 {% endblock %}
 

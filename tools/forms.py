@@ -78,16 +78,44 @@ class ColumnToRowForm(RowToColumnForm):
     def __init__(self, *args, **kwargs):
         super(ColumnToRowForm, self).__init__(*args, **kwargs)
         self.fields['sep'].strip = False
+        self.fields['delete_extra_space'].required = False
+        self.fields['delete_nulls'].required = False
+
+    delete_extra_space = forms.BooleanField(widget=forms.CheckboxInput(attrs={
+        'class': 'form-check-input mb-0',
+        'label': 'delete_extra_space',
+        'name': 'delete_extra_space',
+        'checked': True
+    }))
+
+    delete_nulls = forms.BooleanField(widget=forms.CheckboxInput(attrs={
+        'class': 'form-check-input',
+        'label': 'delete_nulls',
+        'name': 'delete_nulls',
+        'checked': True
+    }))
 
     class Meta(RowToColumnForm.Meta):
         model = ColumnToRow
 
-    def column_to_row(self):
+    def column_to_row(self, delete_nulls=True, delete_extra_space=True):
+        delete_nulls = bool(delete_nulls)
+        delete_extra_space = bool(delete_extra_space)
         if self.is_valid():
             result = self.cleaned_data['input_data'].split('\n')
+            print(result)
 
             for i in range(len(result)):
-                result[i] = result[i].strip()
+                result[i] = result[i].strip('\r')
+
+            if delete_extra_space:
+                for i in range(len(result)):
+                    result[i] = result[i].strip('\t')
+                    result[i] = result[i].strip(' ')
+
+
+            if delete_nulls:
+                result = list(filter(bool, result))
 
             self.cleaned_data['result'] = self.cleaned_data['sep'].join(result)
 

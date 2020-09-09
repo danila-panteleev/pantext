@@ -33,7 +33,9 @@ def column_to_row(request):
         form = ColumnToRowForm(request.POST)
 
     if form.is_valid():
-        form = form.column_to_row()
+        delete_extra_space = request.POST.getlist('delete_extra_space')
+        delete_nulls = request.POST.getlist('delete_nulls')
+        form = form.column_to_row(delete_nulls, delete_extra_space)
         form = ColumnToRowForm(form.cleaned_data)
         form.save()
 
