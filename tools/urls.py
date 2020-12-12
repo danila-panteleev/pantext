@@ -12,7 +12,5 @@ urlpatterns = [
     path('tools/autofill', views.autofill, name='autofill'),
     path('tools/cross_minus_cleaner', views.cross_minus_cleaner, name='cross_minus_cleaner'),
     path('tools/delete_utm', views.utm_deleter, name='delete_utm'),
-    path('tools/list_combinator', views.list_combinator, name='list_combinator'),
-
 
 ]

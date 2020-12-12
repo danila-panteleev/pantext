@@ -1,5 +1,4 @@
 from django import forms
-from django.forms import formset_factory
 from .models import (InputResult,
                      RowToColumn,
                      ColumnToRow,
@@ -113,6 +112,7 @@ class ColumnToRowForm(RowToColumnForm):
                 for i in range(len(result)):
                     result[i] = result[i].strip('\t')
                     result[i] = result[i].strip(' ')
+
 
             if delete_nulls:
                 result = list(filter(bool, result))
@@ -565,13 +565,3 @@ class UtmDeleterForm(InputForm):
                 input_data[i] = re.sub(r'.utm.*', '', input_data[i])
             self.cleaned_data['result'] = '\n'.join(input_data)
         return self
-
-
-class ListCombinatorForm(forms.Form):
-
-    def __init__(self, *args, **kwargs):
-        super(ListCombinatorForm, self).__init__(*args, **kwargs)
-        self.fields['result'].required = False
-
-    input_field = forms.Textarea()
-

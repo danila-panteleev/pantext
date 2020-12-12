@@ -1,15 +1,17 @@
-{% extends 'main/base.html' %}
+{% extends 'tools/form_input_result.html' %}
 
-{% block title %}
-    Комбинатор списков
+{% block form_title %}
+    Строка в столбец
 {% endblock %}
 
 
-{% block body %}
-    <h1 class="container">Комбинатор списков</h1>
-
-
+{% block h1 %}
+    Строка в столбец
 {% endblock %}
 
 
+{% block form_options %}
+    <p class="mb-0">Для табуляции используйте \t</p>
+    {{ form.sep }}
+{% endblock %}
 

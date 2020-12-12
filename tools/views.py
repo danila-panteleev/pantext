@@ -7,8 +7,7 @@ from .forms import (RowToColumnForm,
                     ChangeCaseForm,
                     AutofillForm,
                     CrossMinusCleanerForm,
-                    UtmDeleterForm,
-                    ListCombinatorForm)
+                    UtmDeleterForm)
 
 
 def row_to_column(request):
@@ -168,11 +167,3 @@ def utm_deleter(request):
         'form': form,
     }
     return render(request, 'tools/delete_utm.html', context)
-
-
-def list_combinator(request):
-
-    context = {
-
-    }
-    return render(request, 'tools/list_combinator.html', context)
