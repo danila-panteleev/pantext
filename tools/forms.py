@@ -17,7 +17,7 @@ import re
 
 class InputForm(forms.ModelForm):
     """
-    Суперкласс для форм, состоящих из двух полей: ввод и вывод
+    Superclass form for input and output forms
     """
 
     def __init__(self, *args, **kwargs):
@@ -41,10 +41,6 @@ class InputForm(forms.ModelForm):
 
 
 class RowToColumnForm(InputForm):
-    """
-    Форма "Строка в столбец"
-    """
-
     class Meta(InputForm.Meta):
         model = RowToColumn
 
@@ -71,10 +67,6 @@ class RowToColumnForm(InputForm):
 
 
 class ColumnToRowForm(RowToColumnForm):
-    """
-    Форма "Столбец в строку"
-    """
-
     def __init__(self, *args, **kwargs):
         super(ColumnToRowForm, self).__init__(*args, **kwargs)
         self.fields['sep'].strip = False
@@ -113,7 +105,6 @@ class ColumnToRowForm(RowToColumnForm):
                     result[i] = result[i].strip('\t')
                     result[i] = result[i].strip(' ')
 
-
             if delete_nulls:
                 result = list(filter(bool, result))
 
@@ -123,10 +114,6 @@ class ColumnToRowForm(RowToColumnForm):
 
 
 class DeleteDuplicatesForm(InputForm):
-    """
-    Форма "Удаление дубликатов"
-    """
-
     def __init__(self, *args, **kwargs):
         super(DeleteDuplicatesForm, self).__init__(*args, **kwargs)
         self.fields['case_sensitive'].required = False
@@ -180,10 +167,6 @@ class DeleteDuplicatesForm(InputForm):
 
 
 class NumberInWordsForm(InputForm):
-    """
-    Форма "Число прописью"
-    """
-
     class Meta(InputForm.Meta):
         model = NumbersInWords
 
@@ -232,10 +215,6 @@ class NumberInWordsForm(InputForm):
 
 
 class ListSortingForm(InputForm):
-    """
-    Форма "Сортировка списков"
-    """
-
     class Meta(InputForm.Meta):
         model = ListSorting
 
@@ -284,10 +263,6 @@ class ListSortingForm(InputForm):
 
 
 class ChangeCaseForm(InputForm):
-    """
-    Форма "Изменение регистра"
-    """
-
     class Meta(InputForm.Meta):
         model = ChangeCase
 
@@ -336,16 +311,15 @@ class ChangeCaseForm(InputForm):
 
     def change_case(self, mode='', option_reverse=True, option_force=True):
         """
-        Основная функция изменения регистра
-
-        :param mode: тип изменения регистра(вызываемая подфункция):
-                                             Каждое слово           each_word
-                                             Как в предложениях     sentence
-                                             Все буквы              all_letters
-                                             Заборчиком (ПрИмЕр)    fence
-                                             Случайный регистр      random_case
-        :param option_reverse: если True, то подфункция инвертируется
-        :param option_force: если True, то подфункция принудительно меняет регистр
+        Main change case function
+        :param mode: mode of change case (calling subfunction):
+                                             Lorem Ipsum              each_word
+                                             Lorem Ipsum. Is simply   sentence
+                                             LOREM IPSUM              all_letters
+                                             LoReM IpSuM              fence
+                                             lORem iPsuM              random_case
+        :param option_reverse: reverse subfunction if True
+        :param option_force: forcing case changing if True
         :return: self
         """
         option_reverse = bool(option_reverse)
@@ -353,12 +327,7 @@ class ChangeCaseForm(InputForm):
 
         def each_word(data, reverse=option_reverse, force=option_force):
             """
-            Каждое слово
-
-            :param data: строка
-            :param reverse: если True, то функция инвертируется
-            :param force: если True, то функция принудительно меняет регистр
-            :return: итоговая строка
+            :return: str
             """
             data = list(data)
 
@@ -384,13 +353,8 @@ class ChangeCaseForm(InputForm):
 
         def sentence(data, reverse=option_reverse, force=option_force):
             """
-            Как в предложениях.
-            После знаков препинания и с новой строки (preps) первая буква слова большая
-
-            :param data: строка
-            :param force: если True, то функция принудительно изменяет регистр
-            :param reverse: если True, то функция инвертируется
-            :return: итоговая строка
+            Capitalize letter after preps and from the beginning of the line
+            :return: str
             """
             data = list(data)
             preps = ['.', '!', '\n', '?']
@@ -425,11 +389,7 @@ class ChangeCaseForm(InputForm):
 
         def all_letters(data, reverse=option_reverse):
             """
-            Все буквы
-
-            :param data: строка
-            :param reverse: если True, то функция инвертируется
-            :return: итоговая строка
+            :return: str
             """
 
             if reverse:
@@ -441,11 +401,7 @@ class ChangeCaseForm(InputForm):
 
         def fence(data, reverse=option_reverse):
             """
-            Заборчик
-
-            :param data: строка
-            :param reverse: инверсия
-            :return: итоговая строка
+            :return: str
             """
             data = list(data)
             preps = ['.', '!', '?', ' ', '\n', '\t', '\r']
@@ -504,10 +460,6 @@ class ChangeCaseForm(InputForm):
 
 
 class AutofillForm(InputForm):
-    """
-    Форма "Автозаполнение пустых строк"
-    """
-
     class Meta(InputForm.Meta):
         model = Autofill
 
