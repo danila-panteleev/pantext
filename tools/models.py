@@ -3,7 +3,7 @@ from django.db import models
 
 class InputResult(models.Model):
     """
-    Суперкласс для моделей, состоящих из двух полей: ввод и вывод
+    Superclass for models with two fields: input and output
     """
     input_data = models.TextField()
     result = models.TextField()
@@ -14,45 +14,33 @@ class InputResult(models.Model):
 
 class RowToColumn(InputResult):
     """
-    Модель для формы "Строка в столбец"
+    sep: separate char
     """
     sep = models.CharField(max_length=10)
 
 
 class ColumnToRow(RowToColumn):
-    """
-    Модель для формы "Столбец в строку"
-    """
     pass
 
 
 class DeleteDuplicates(InputResult):
     """
-    Модель для формы "Удаление дубликатов"
+    delete_nulls: delete empty or None values from object
     """
     case_sensitive = models.BooleanField(default=False)
     delete_nulls = models.BooleanField(default=False)
 
 
 class NumbersInWords(InputResult):
-    """
-    Модель для формы "Число прописью"
-    """
     pass
 
 
 class ListSorting(InputResult):
-    """
-    Модель для формы "Сортировка списка"
-    """
     case_sensitive = models.BooleanField(default=False)
     reverse = models.BooleanField(default=False)
 
 
 class ChangeCase(InputResult):
-    """
-    Модель для формы "Изменение регистра"
-    """
     EACH_WORD = 'each_word'
     SENTENCE = 'sentence'
     ALL_LETTERS = 'all_letters'
@@ -73,18 +61,12 @@ class ChangeCase(InputResult):
 
 
 class Autofill(InputResult):
-    """
-    Модель для формы "Автозаполнение строк"
-    """
+    pass
 
 
 class CrossMinusCleaner(InputResult):
-    """
-    Модель для формы "Чистка от кросс-минусации"
-    """
+    pass
 
 
 class UtmDeleter(InputResult):
-    """
-    Модель для формы "Чистка от UTM-меток"
-    """
+    pass
