@@ -88,3 +88,4 @@ class UtmDeleter(InputResult):
     """
     Модель для формы "Чистка от UTM-меток"
     """
+
