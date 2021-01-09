@@ -23,7 +23,7 @@
 Using [bootstrap 5](https://mdbootstrap.com/docs/standard/getting-started/installation/)
 ###
 ___
-### Django веб-сайт утилит обработки текста
+### Веб-сайт на Django с утилитами обработки текста
 #### [Перейти на сайт](https://pantext.ru)
 #### Функции:
 * [Столбец в строку](https://pantext.ru/tools/column_to_row)
