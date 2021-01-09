@@ -137,11 +137,6 @@ class DeleteDuplicatesForm(InputForm):
         model = DeleteDuplicates
 
     def delete_duplicates(self, case_sensitive=False, delete_nulls=True):
-        """
-        :param case_sensitive: регистрозависимость
-        :param delete_nulls: удаление пустых строк (если False, то все первые значения остаются на своих позициях,
-        вместо дублей пустая строка)
-        """
         if self.is_valid():
             result = self.cleaned_data['input_data'].split('\n')
 
@@ -238,10 +233,6 @@ class ListSortingForm(InputForm):
     }))
 
     def sorting(self, reverse=False, case_sensitive=False):
-        """
-        :param reverse: обратный порядок
-        :param case_sensitive: регистрозависимость
-        """
         if self.is_valid():
             if case_sensitive:
                 self.cleaned_data['result'] = '\n'.join(
@@ -326,9 +317,6 @@ class ChangeCaseForm(InputForm):
         option_force = bool(option_force)
 
         def each_word(data, reverse=option_reverse, force=option_force):
-            """
-            :return: str
-            """
             data = list(data)
 
             if reverse:
@@ -354,7 +342,6 @@ class ChangeCaseForm(InputForm):
         def sentence(data, reverse=option_reverse, force=option_force):
             """
             Capitalize letter after preps and from the beginning of the line
-            :return: str
             """
             data = list(data)
             preps = ['.', '!', '\n', '?']
@@ -388,10 +375,6 @@ class ChangeCaseForm(InputForm):
             return ''.join(data)
 
         def all_letters(data, reverse=option_reverse):
-            """
-            :return: str
-            """
-
             if reverse:
                 data = data.lower()
             else:
@@ -400,9 +383,6 @@ class ChangeCaseForm(InputForm):
             return data
 
         def fence(data, reverse=option_reverse):
-            """
-            :return: str
-            """
             data = list(data)
             preps = ['.', '!', '?', ' ', '\n', '\t', '\r']
             flip = True
